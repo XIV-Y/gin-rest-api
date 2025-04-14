@@ -134,6 +134,53 @@ func UpdateUser(c *gin.Context) {
 	})
 }
 
+func PatchUser(c *gin.Context) {
+	id := c.Param("id")
+	var user models.User
+
+	result := db.DB.First(&user, id)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, Response{
+			Errors: []Error{{
+				Status: strconv.Itoa(http.StatusNotFound),
+				Title:  "Resource Not Found",
+				Detail: "User with specified ID not found",
+			}},
+		})
+		return
+	}
+
+	var patchData map[string]interface{}
+	if err := c.ShouldBindJSON(&patchData); err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Errors: []Error{{
+				Status: strconv.Itoa(http.StatusBadRequest),
+				Title:  "Validation Error",
+				Detail: err.Error(),
+			}},
+		})
+		return
+	}
+
+	result = db.DB.Model(&user).Updates(patchData)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, Response{
+			Errors: []Error{{
+				Status: strconv.Itoa(http.StatusInternalServerError),
+				Title:  "Database Error",
+				Detail: result.Error.Error(),
+			}},
+		})
+		return
+	}
+
+	db.DB.First(&user, id)
+
+	c.JSON(http.StatusOK, Response{
+		Data: user.ToResponse(),
+	})
+}
+
 func DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	var user models.User
