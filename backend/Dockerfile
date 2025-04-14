@@ -1,13 +1,18 @@
-FROM node:18-alpine
+FROM golang:1.22.0
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm install
-
 COPY . .
 
-EXPOSE 3001
+COPY go.mod go.sum ./
+RUN go mod download
 
-CMD ["npm", "run", "start:dev"]
+RUN ls -la
+
+RUN go build -o main .
+
+RUN ls -la
+
+EXPOSE 8080
+
+CMD ["go", "run", "main.go"]
