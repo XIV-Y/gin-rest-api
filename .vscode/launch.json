@@ -2,16 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "name": "Remote Gin Debugger",
+      "type": "go",
       "request": "attach",
-      "name": "Debug NestJS in Docker",
-      "address": "localhost",
+      "mode": "remote",
       "port": 9229,
-      "localRoot": "${workspaceFolder}/backend",
-      "remoteRoot": "/app",
-      "sourceMaps": true,
-      "restart": true,
-      "skipFiles": ["<node_internals>/**"]
+      "host": "127.0.0.1",
+      "showLog": true,
+      "trace": "log",
+      "remotePath": "/app",
+      "cwd": "${workspaceFolder}/backend",
+      "substitutePath": [
+        {
+          "from": "${workspaceFolder}/backend",
+          "to": "/app"
+        }
+      ]
     }
   ]
 }
